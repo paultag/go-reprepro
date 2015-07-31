@@ -34,8 +34,8 @@ func (repo *Repo) Command(args ...string) *exec.Cmd {
 	}, args...)...)
 }
 
-func (repo *Repo) ProcessIncoming() error {
-	cmd := repo.Command("processincoming")
+func (repo *Repo) ProcessIncoming(rule string) error {
+	cmd := repo.Command("processincoming", rule)
 	return cmd.Run()
 }
 

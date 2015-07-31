@@ -20,6 +20,43 @@
 
 package reprepro
 
-import ()
+import (
+	"os/exec"
+)
+
+type Repo struct {
+	Basedir string
+}
+
+func (repo *Repo) Command(args ...string) *exec.Cmd {
+	return exec.Command("reprepro", append([]string{
+		"--basedir", repo.Basedir,
+	}, args...)...)
+}
+
+func (repo *Repo) ProcessIncoming() error {
+	cmd := repo.Command("processincoming")
+	return cmd.Run()
+}
+
+func (repo *Repo) Check() error {
+	cmd := repo.Command("check")
+	return cmd.Run()
+}
+
+func (repo *Repo) Check() error {
+	cmd := repo.Command("checkpool")
+	return cmd.Run()
+}
+
+func (repo *Repo) Include(suite string, changes string) error {
+	cmd := repo.Command("include", suite, changes)
+	return cmd.Run()
+}
+
+// Create a new reprepro.Repo object given a filesystem path to the Repo.
+func NewRepo(path string) *Repo {
+	return &Repo{Basedir: path}
+}
 
 // vim: foldmethod=marker

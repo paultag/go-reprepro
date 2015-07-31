@@ -44,7 +44,7 @@ func (repo *Repo) Check() error {
 	return cmd.Run()
 }
 
-func (repo *Repo) Check() error {
+func (repo *Repo) CheckPool() error {
 	cmd := repo.Command("checkpool")
 	return cmd.Run()
 }

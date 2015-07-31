@@ -64,3 +64,5 @@ func (repo *Repo) BuildNeeding(suite string, arch string) ([]BuildNeedingPackage
 	}
 	return ret, nil
 }
+
+// vim: foldmethod=marker

@@ -52,15 +52,23 @@ func (repo *Repo) BuildNeeding(suite string, arch string) ([]BuildNeedingPackage
 			return ret, err
 		}
 		els := strings.Split(line, " ")
-		if len(els) != 4 {
-			return ret, fmt.Errorf("Unexpected input: %s", line)
+		if len(els) == 4 {
+			ret = append(ret, BuildNeedingPackage{
+				Source:   els[0],
+				Version:  els[1],
+				Location: els[2],
+				Arch:     els[3],
+			})
+		} else if len(els) == 3 {
+			ret = append(ret, BuildNeedingPackage{
+				Source:   els[0],
+				Version:  els[1],
+				Location: els[2],
+				Arch:     arch,
+			})
+		} else {
+			return nil, fmt.Errorf("Unknown line: %s\n", line)
 		}
-		ret = append(ret, BuildNeedingPackage{
-			Source:   els[0],
-			Version:  els[1],
-			Location: els[2],
-			Arch:     els[3],
-		})
 	}
 	return ret, nil
 }

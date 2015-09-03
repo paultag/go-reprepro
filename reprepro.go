@@ -21,42 +21,68 @@
 package reprepro
 
 import (
+	"bytes"
+	"fmt"
 	"os/exec"
+	"strings"
 )
 
 type Repo struct {
-	Basedir string
+	Basedir   string
+	Arguments []string
 }
 
 func (repo *Repo) Command(args ...string) *exec.Cmd {
-	return exec.Command("reprepro", append([]string{
+	return exec.Command("reprepro", append(repo.Arguments, append([]string{
 		"--basedir", repo.Basedir,
-	}, args...)...)
+	}, args...)...)...)
+}
+
+func proxyRun(cmd *exec.Cmd) error {
+	buf := bytes.Buffer{}
+	cmd.Stderr = &buf
+	err := cmd.Run()
+	out := strings.SplitN(buf.String(), "\n", 2)
+	if err != nil {
+		if len(out) == 0 {
+			return err
+		}
+		return fmt.Errorf("%s (underlying error: %s)", out[0], err)
+	}
+	return nil
 }
 
 func (repo *Repo) ProcessIncoming(rule string) error {
 	cmd := repo.Command("processincoming", rule)
-	return cmd.Run()
+	return proxyRun(cmd)
 }
 
 func (repo *Repo) Check() error {
 	cmd := repo.Command("check")
-	return cmd.Run()
+	return proxyRun(cmd)
+}
+
+func (repo *Repo) Export() error {
+	cmd := repo.Command("export")
+	return proxyRun(cmd)
 }
 
 func (repo *Repo) CheckPool() error {
 	cmd := repo.Command("checkpool")
-	return cmd.Run()
+	return proxyRun(cmd)
 }
 
 func (repo *Repo) Include(suite string, changes string) error {
 	cmd := repo.Command("include", suite, changes)
-	return cmd.Run()
+	return proxyRun(cmd)
 }
 
 // Create a new reprepro.Repo object given a filesystem path to the Repo.
-func NewRepo(path string) *Repo {
-	return &Repo{Basedir: path}
+func NewRepo(path string, args ...string) *Repo {
+	return &Repo{
+		Basedir:   path,
+		Arguments: args,
+	}
 }
 
 // vim: foldmethod=marker

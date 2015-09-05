@@ -34,9 +34,13 @@ type BuildNeedingPackage struct {
 	Arch     string
 }
 
-func (repo *Repo) BuildNeeding(suite string, arch string) ([]BuildNeedingPackage, error) {
+func (repo *Repo) BuildNeeding(suite string, arch string, glob *string) ([]BuildNeedingPackage, error) {
 	ret := []BuildNeedingPackage{}
-	cmd := repo.Command("build-needing", suite, arch)
+	args := []string{"build-needing", suite, arch}
+	if glob != nil {
+		args = append(args, *glob)
+	}
+	cmd := repo.Command(args...)
 	out, err := cmd.Output()
 	if err != nil {
 		return ret, err

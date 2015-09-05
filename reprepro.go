@@ -23,6 +23,7 @@ package reprepro
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -83,6 +84,10 @@ func NewRepo(path string, args ...string) *Repo {
 		Basedir:   path,
 		Arguments: args,
 	}
+}
+
+func GetWorkingRepo() *Repo {
+	return NewRepo(os.Getenv("REPREPRO_BASE_DIR"))
 }
 
 // vim: foldmethod=marker
